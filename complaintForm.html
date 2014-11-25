@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">-->
+  <title>Complaint Form</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/typeahead.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.2/themes/blitzer/jquery-ui.css">
+  <link rel="stylesheet" href="css/jquery-ui-timepicker-addon.min.css">
+  <!-- choose a theme from jquery ui and download the css file. -->
+  <!--<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/">-->
+  <!-- find css file for timpeicker off github repo and download -->
+</head>
+<body class="container">
+  <fieldset>
+    <legend>Raleigh Hospitality District - Online Complaint Form Prototype</legend>
+    <div class="form-group">
+      <label for="Disclaimer">**If you have a public safety emergency, please do not use this form; instead dial 911.</label>
+    </div>
+    <div class="form-group">
+      <label for="establishment">Select Establishment</label>
+      <select id="establishment" class="form-control" autofocus>
+      </select>
+    </div>
+ 
+    <div class="form-group">
+      <label for="newName">Complainant Name</label>
+      <input type="text" id="newName" class="form-control" placeholder="Joe Smith" pattern="" required  oninvalid="this.setCustomValidity('User ID is a must')"/>
+    </div>
+    <div class="form-group">
+      <label for="newPhone">Complainant Phone</label>
+      <input type="tel" id="newPhone" class="form-control" placeholder="999-999-9999" pattern="" onchange="checkPhone(this)" required />
+    </div>
+    <div class="form-group">
+      <label for="newEmail">Complainant Email</label>
+      <input type="text" id="newEmail" class="form-control" placeholder="test@test.com" pattern="" onchange="checkEmail(this)"required />
+    </div>
+    <div class="form-group">
+      <label for="newAddress">Complainant Address</label>
+      <input type="text" id="newAddress" class="form-control" placeholder="1 Main St" pattern="" required />
+    </div>
+    <div class="form-group">
+      <label for="compDate">Date</label>
+      <input type="date" id="compDate" class="form-control" placeholder="10/14/2014" />
+    </div>
+    <div class="form-group">
+      <label for="newTime">What time</label>
+      <input type="time" id="newTime" class="form-control" placeholder="10:00 PM" />
+    </div>
+    <div class="form-group"
+      <label for="comments">Summary of Complaint</label>
+      <textarea rows="3" id="comments" class="form-control"></textarea>
+    </div>
+    <label for="comments">
+      <font size="5">Check all below that apply:</font><br></label> 
+    <div class="controls form-inline">
+      <input type="checkbox" id="contactEst" class="form-control" />
+      <label for="contactEst">I contacted the establishment but was not able speak to anyone</label>
+      
+    </div>
+    <div class="controls form-inline">
+      <input type="checkbox" id="estReact" class="form-control" />
+      <label for="estReact">I contacted the establishment but my complaint was not resolved</label>
+      
+    </div>
+    <div class="controls form-inline">
+      <input type="checkbox" id="polCall" class="form-control" />
+      <label for="polCall">I did not attempt to contact the establishment</label>
+      
+    </div>
+    <!-- <div class="controls form-inline"/>
+    <label for="compResolved">the complaint was resolved</label>
+    <input type="checkbox" id="compResolved" class="form-control" />
+  </div> -->
+  <div class="form-group">
+    <label for="moreComments">Additional Comments</label>
+    <textarea rows="3" id="moreComments" class="form-control"></textarea>
+  </div>
+  <button type="button" class="btn btn-primary btn-lg btn-block" onclick="validSend()">Submit</button>
+</fieldset>
+
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js"></script>
+<!-- find the minified js file from the timepicket github repo and download to include -->
+<script src="js/typeahead.min.js"></script>
+<script src="js/modernizr.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8/jquery.validate.min.js"></script>
+<script>
+$(document).ready(function()
+{
+  
+  if (!Modernizr.inputtypes.date) { $('input[type="date"]').datepicker(); }
+  if (!Modernizr.inputtypes.time) { $('input[type="time"]').timepicker({timeFormat: 'h:mm TT'}); }
+  /*if (document.all && document.querySelector && !document.addEventListener) {
+    alert('IE8');
+    }*/
+  setTypeahead();
+  var first = getUrlVars()["estName"];
+  var first = first.replace(/%20/g, " ");
+  var first = first.replace('+', "&");
+  $.getJSON('gs_business.geojson',function(obj)
+  {
+   $.each(obj.features,function(key,value)
+   {
+    $("#establishment").append("<option>" + value.properties.Name  + "</option>");
+  });
+}).promise().done(function () { $("#establishment").val(first); });
+});
+ 
+function getUrlVars()
+{
+  var vars = [], hash;
+  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+  for(var i = 0; i < hashes.length; i++)
+  {
+    hash = hashes[i].split('=');
+    vars.push(hash[0]);
+    vars[hash[0]] = hash[1];
+  }
+  return vars;
+}
+ 
+function validSend() {
+  //document.getElementById('newName').style.borderColor =  "inherit";
+  //document.getElementById('newPhone').style.borderColor = "inherit";
+  //document.getElementById('newEmail').style.borderColor = "inherit";
+  //document.getElementById('newAddress').style.borderColor = "inherit";
+  var submitName = document.getElementById('newName').value;
+  var submitphone = document.getElementById('newPhone').value;
+  var submitEmail = document.getElementById('newEmail').value;
+  var submitAddress = document.getElementById('newAddress').value;
+ 
+  if (submitName == null || submitName == "")
+  {
+    document.getElementById('newName').style.borderColor = "red";
+    alert("Name must be filled out");
+    return false;}
+  if ((submitphone == null || submitphone == "") && (submitEmail == null || submitEmail ==""))
+  {
+    document.getElementById('newPhone').style.borderColor = "red";
+    document.getElementById('newEmail').style.borderColor = "red";
+    alert("Please provide a phone number or Email address");
+    return false;}
+  if (submitAddress == null || submitAddress == "")
+    {
+      document.getElementById('newAddress').style.borderColor = "red";
+      alert("Please provide a valid Address");
+      return false;}
+               //validate required fields
+               emailContent = "Establishment: "               + establishment.value + "\n" + "Complaintant Name: " + newName.value + "\n" + "Complaintant Phone: " + newPhone.value + "\n" + "Complaintant Email: " + newEmail.value  + "\n" + "Complaintant Address: " + newAddress.value  + "\n" + "Date: " + compDate.value  + "\n" + "Time: " + newTime.value + "\n" + "Complaint: " + comments.value + "\n\n\n" + "contacted the establishment but was not able speak to anyone: " + (contactEst.checked ? 'Yes' : 'No') + "\n\n" + "contacted the establishment but my complaint was not resolved: " + (estReact.checked ? 'Yes' : 'No') + "\n\n" + "did not attempt to contact the establishment: " + (polCall.checked ? 'Yes' : 'No') + "\n\n" + "Additional Comments: " + moreComments.value;
+               //var data = {from:"Hospitality District",fromEmail:"Hospitality@raleighnc.gov",to:"noiseofficer", toEmail:"james.//alberque@raleighnc.gov",message:emailContent,subject:"Hospitality District - online complaint"};
+               var data = {from:"Hospitality District",fromEmail:"Hospitality@raleighnc.gov",to:"noiseofficer", toEmail:"noise.officer@raleighnc.gov",message:emailContent,subject:"Hospitality District - online complaint"};
+               t = $.ajax({
+        type: "POST",
+        url: "http://mapststarcweb1/php/email_simple.php",
+        data: data,
+        success: function(result){
+          //$("#openModal").dialog("open");
+          alert ("The complaint has been sent successfully to the Raleigh Noise Officer");
+          document.getElementById("newName").value = "";
+          document.getElementById("newPhone").value = "";
+          document.getElementById("newEmail").value = "";
+ 
+        },
+        fail: function(jqXHR, textStatus, errorThrown ) {
+          console.log(errorThrown);
+          alert ("Error sending email, please contact system administrator")
+        }
+                                //dataType: dataType
+       });
+               //alert ("sending email");
+    }
+ 
+    function checkPhone (obj) {
+      str = obj.value.replace(/[^0-9]+?/g, '');
+      switch (str.length) {
+       case 0:
+       alert('Please enter numbers only.');
+       obj.select();
+       return;
+       case 7:
+       str = str.substr(0,3)+"-"+str.substr(3,4);
+       break;
+       case 10:
+       str = "("+str.substr(0,3)+") "+str.substr(3,3)+"-"+str.substr(6,4);
+       break;
+       default:
+       alert('Please enter a 7 digit phone number (with area code, if applicable).');
+       //obj.select();
+       $("#newPhone").focus();
+       return;
+     }
+     obj.value = str;
+   }
+
+ function checkEmail(emailAddress){
+if(emailAddress.value == '' || emailAddress.value.indexOf('@') == -1 || emailAddress.value.indexOf('.') == -1)
+{
+   alert("Please provide a valid email address");
+   emailAddress.select();
+   return;
+}
+ }
+ 
+ 
+   function checkName() {
+    var x = document.getElementById('newName').value
+    if (x == null || x == "") {
+      alert("Name must be filled out");
+      return false;
+    }
+ 
+  }
+ 
+  function setTypeahead () {
+    var addresses = new Bloodhound({
+      datumTokenizer: function (datum) {
+        return Bloodhound.tokenizers.whitespace(datum.value);
+      },
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      remote: {
+        url: "http://maps.raleighnc.gov/arcgis/rest/services/Addresses/MapServer/0/query?orderByFields=ADDRESS&returnGeometry=false&outFields=ADDRESS&returnDistinctValues=false&f=json",
+        filter: addressFilter,
+        replace: function(url, uriEncodedQuery) {
+          var newUrl = url + '&where=ADDRESSU like ' + "'" + checkAbbreviations(uriEncodedQuery).toUpperCase() +"%'";
+          return newUrl;
+        }
+      }
+    });
+ 
+    addresses.initialize();
+ 
+    $("#newAddress").typeahead({hint: true, highlight: true, minLength: 1},
+      {name:'Addresses',
+      displayKey:'value',
+      source:addresses.ttAdapter()
+   });//.on("typeahead:selected", typeaheadSelected);
+  }
+ 
+  function addressFilter (resp) {
+    var data = []
+    if (resp.features.length > 0) {
+      $(resp.features).each(function (i, f) {
+        data.push({value:f.attributes['ADDRESS']});
+      });
+    }
+    return data;
+  }
+ 
+  function checkAbbreviations (value) {
+    var abbreviations = [{full: "Saint ", abbr: "St "},
+    {full: "North ", abbr:"N "},
+    {full: "South ", abbr: "S "},
+    {full: "West ", abbr:"W "},
+    {full: "East ", abbr: "E "},
+    {full: "Martin Luther King Jr", abbr: "MLK"}];
+    value = value.replace("'", "");
+    value = value.replace(".", "");
+    $.each(abbreviations, function (i, a) {
+      value = value.replace(new RegExp(a.abbr, 'gi'), a.full);
+    });
+    return value;
+  }
+               //function typeaheadSelected(obj, data, dataset){
+ 
+  //}
+  </script>
+</body>
+</html>

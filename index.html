@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hospitality District</title> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css' rel='stylesheet' />
+    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css' rel='stylesheet' />
+    <!--[if lt IE 9]>
+      <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.21.0/L.Control.Locate.ie.css' rel='stylesheet' />
+      <![endif]-->
+      <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+      <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+     
+</head>
+<body>
+    <div  class="jumbotron">
+      <div class="header row">
+        <h4 class="visible-xs">City of Raleigh</h4>
+        <span class="lead visible-xs">Hospitality District</span>
+        <div class="col-sm-7">
+            <h3 class="visible-sm visible-md visible-lg">City of Raleigh</h3>
+            <span class="lead">Hospitality District - PROTOTYPE</span>
+            <!-- <h5 class="visible-sm visible-md visible-lg"><i>Sunday, April 13th, 2014</i></h5>-->
+        </div>
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-4">
+          <img class="pull-right" src="img/City-Seal-white.png"/>
+      </div>
+
+  </div>
+</div>  
+<div id="map"></div>
+
+</div>
+ <div id="splash-modal" class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+  <!--            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">About</h4>
+            </div> -->
+            <div class="modal-body">
+              <p>The Glenwood South Hospitality District map provides contact information for outdoor amplification noise permit holders within the designated district. The red dots indicate the locations of businesses holding Hospitality District Entertainment Permits (HDEP’s). Click the dot to view the business’s contact information or create an online complaint.</p>
+              <div class="text-center"><button class="btn btn-success" data-dismiss="modal">Continue</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="js/moment.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="js/modernizr.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
+<script src="js/esri-leaflet.js"></script>
+<script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js'></script>
+<script>
+
+var geojsonMarkerOptions = {
+    radius: 8,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+};
+
+
+function getBound(map) {
+    $.getJSON('hospitality.geojson',  function(json, textStatus) {
+        var geoJson = L.geoJson(json, {
+            style: {"color": "black", "opacity": 0.15, "weight":12, "dashArray" : "20 0 20 0", "lineCap":"square"}
+        });
+        geoJson.addTo(map);
+        getBusiness(map);
+    });
+}
+
+function getBusiness (map) {
+            //map.eachLayer(function (layer) {
+            //    console.log(layer);
+            //});
+
+$.getJSON('gs_business.geojson', function(json, textStatus) {
+   L.geoJson(json,
+   {
+    style: function (feature)
+    {
+     return {color: '#03f'};
+ },
+ pointToLayer: function (feature, latlng)
+ {
+     return L.circleMarker(latlng, geojsonMarkerOptions).bindLabel(feature.properties.Name, 
+     { 
+      noHide: false,
+      direction: 'auto'				
+  });
+ }, 
+ onEachFeature: function (feature, layer) {
+
+    var myURL = 'complaintForm.html?estName=' + feature.properties.Name.replace(/&/g, '+')
+                //rawurlencode(myURL);
+                //encodeURIComponent(myURL);
+                var popup = "<strong><h4>"+feature.properties.Name+"</h4></strong>"+
+                "<b>Contact: </b>"+feature.properties.Manager_Name+
+                "<br><b>Phone : </b>"+feature.properties.Manager_Phone+
+                "<br>"+
+				//This is for launch phone calll functionality
+				//"<br><b>Phone </b>:<a href='tel:"+feature.properties.Manager_Phone+"'>"+feature.properties.Manager_Phone+"</a>"+
+				//"<br><br><strong><u>Raleigh Noise Officer Contact</u></strong>"+
+                //"<br>For Online Complaint Form: <a href='"+ myURL + "' class='smallPolygonLink'>Click here</a>." +
+				"<br><a href='"+ myURL + "' class='smallPolygonLink'>Submit Online Complaint Form</a>." +
+                "<br><a href='mailto:noise.officer@raleighnc.gov' class='smallPolygonLink'>Email Noise Officer</a><br>"+
+                "<br>for Emergencies please call 911";
+                layer.bindPopup(popup);
+            }
+        }).addTo(map);
+});
+       //map.addLayer(dynLayer);
+   }
+
+   $(document).ready(function () {
+    $('#splash-modal').modal('show');
+    var map =   L.map('map', {minZoom: 16}).setView([35.784888, -78.647352], 16);
+    L.control.locate().addTo(map);
+    
+    L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{minZoom: 16, maxZoom: 19, attribution: 'Esri, DeLorme, NAVTEQ'}).addTo(map);
+    
+    x = 'a';
+    getBound(map);
+    getBusiness(map);
+
+    if($(document).width() < 480)
+    {
+        $('#legend').hide();
+        $('#legendToggle').show();
+    }
+    $('.close').click(function () {
+        $('#legend').hide();
+        $('#legendToggle').show();
+    });
+    $('#legendToggle').click(function () {
+        $('#legend').show();
+        $('#legendToggle').hide();
+    });
+
+});
+   </script>
+</body>
+</html>

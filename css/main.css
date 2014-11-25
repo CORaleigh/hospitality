@@ -1,0 +1,106 @@
+ <style type="text/css">
+      body, html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    #map {
+        position: absolute;
+        bottom: 0;
+        top: 120px;
+        width: 100%;
+    }
+    .leaflet-popup .lead {
+        margin-bottom: 4px;
+    }
+    .leaflet-popup-content {
+        width: 300px;
+    }
+    .leaflet-popup hr {
+        margin-top:6px;
+        margin-bottom: 6px;
+    }
+    .leaflet-popup .glyphicon {
+        font-size: 24px;
+        margin-right: 20px;
+    }
+    .leaflet-popup img {
+        margin-right: 20px;
+    }
+    #legend {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background-color: white;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 10;
+    }
+    .legend-label {
+        margin-left: 10px;
+    }
+    #legend h3 {
+        margin-top: 0px;
+    }
+    .jumbotron {
+        line-height: 20px;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        background-color: #5c8fea !important;
+        color: white !important;
+        padding-top: 0px !important;
+        padding-bottom: 0px;
+        height: 120px;
+        background: #537ac1;
+        background-color: #5c8fea;
+        background-image: -webkit-linear-gradient(#5c8fea,#537ac1);
+        background-image: linear-gradient(to bottom,#5c8fea,#537ac1);
+    }
+    .jumbotron h2,h4 {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+    .header {
+        overflow: hidden;
+        position: relative;
+        height: inherit;
+        width: 100%;
+        background-position: 30% 50%;
+        background: url(../img/Skyline1.png) bottom no-repeat;
+    }
+    .header img {
+        max-height: 80px;
+        margin-top: 20px;
+    }
+    .esri-attribution-logo {
+        display: none;
+    }
+    #legendToggle {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        display:none;
+        z-index: 10px;
+    }
+    @media (max-width: 768px) {
+        #map {
+            top: 60px;
+        }
+        .jumbtron {
+            height: 60px;
+        }
+        .header img{
+            display: none;
+        }
+        .header {
+            background: none;
+        }
+    }
+    @media (max-width: 400px) {
+        .leaflet-popup-content {
+            max-width: 220px;
+        }
+    }
+    </style>
