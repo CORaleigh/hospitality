@@ -113,7 +113,7 @@ $.getJSON('gs_business.geojson', function(json, textStatus) {
                 //encodeURIComponent(myURL);
                 var popup = "<strong><h4>"+feature.properties.Name+"</h4></strong>"+
                 "<b>Contact: </b>"+feature.properties.Manager_Name+
-                "<br><b>Phone : </b>"+feature.properties.Manager_Phone+
+                "<br><b>Phone : </b><a href='tel:"+ feature.properties.Manager_Phone + "'>" +feature.properties.Manager_Phone+
                 "<br>"+
 				//This is for launch phone calll functionality
 				//"<br><b>Phone </b>:<a href='tel:"+feature.properties.Manager_Phone+"'>"+feature.properties.Manager_Phone+"</a>"+
